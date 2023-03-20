@@ -65,3 +65,18 @@ class Renderer:
                     eventManager.tiles[tile] = pygame.transform.scale(eventManager.tiles[tile], (TILE_SIZE, TILE_SIZE))
                     self.win.blit(eventManager.tiles[tile],
                                   (x * TILE_SIZE - self.scroll_x, y * TILE_SIZE - self.scroll_y))
+
+    def draw_hitbox(self, eventManager):
+
+        pos = pygame.mouse.get_pos()
+        x = int((pos[0] + self.scroll_x) // TILE_SIZE)
+        y = int((pos[1] + self.scroll_y) // TILE_SIZE)
+
+        if pygame.mouse.get_pressed()[1] == 1:
+
+            eventManager.hitbox_x.append((x * TILE_SIZE - self.scroll_x))
+            eventManager.hitbox_y.append((y * TILE_SIZE - self.scroll_y))
+
+        for i in range(len(eventManager.hitbox_x)):      
+            pygame.draw.rect(self.win, (255, 0, 0), (eventManager.hitbox_x[i] - self.scroll_x, eventManager.hitbox_y[i] - self.scroll_y, 
+                                TILE_SIZE, TILE_SIZE), 2)
