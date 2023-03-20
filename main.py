@@ -28,9 +28,10 @@ while eventManager.running:
         start_time = new_time
 
         renderer.draw_bg()
-        renderer.draw_world(eventManager)
+        renderer.draw_world(renderer, eventManager)
+        player.move(delta_time)
         player.draw(renderer)
-        player.move(renderer, delta_time)
+
 
     eventManager.check_events()
 

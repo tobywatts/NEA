@@ -11,7 +11,9 @@ class EventManager:
         self.x = 0
         self.y = 0
         self.tiles = []
+        self.rect = []
         self.tile_set = pygame.image.load('tiles/Forest.png')
+        
 
     def check_events(self):
         for event in pygame.event.get():
@@ -24,7 +26,9 @@ class EventManager:
             self.y = i // TILE_COLUMNS
             tile = self.tile_set.subsurface((self.x * SPRITE_WIDTH, self.y * SPRITE_WIDTH),
                                             (SPRITE_WIDTH, SPRITE_WIDTH))
+            tile_rect = tile.get_rect()
             self.tiles.append(tile)
+            self.rect.append(tile_rect)
 
     def world(self):
         for row in range(2 * ROWS):

@@ -29,6 +29,7 @@ while eventManager.running:
         renderer.draw_bg()
         renderer.draw_grid()
         renderer.draw_world(eventManager)
+        renderer.draw_hitbox(eventManager)
         eventManager.check_scroll(renderer, delta_time)
 
     eventManager.check_events()

@@ -13,6 +13,10 @@ class EventManager:
         self.tiles = []
         self.tile_set = pygame.image.load('tiles/Forest.png')
         self.current_tile = 0
+        self.hitboxes = []
+        self.hitbox_x = []
+        self.hitbox_y = []
+        self.hitbox_width = TILE_SIZE
 
     def check_events(self):
         for event in pygame.event.get():
@@ -62,6 +66,9 @@ class EventManager:
             if pygame.mouse.get_pressed()[2] == 1:  # checks for right click
                 world_data[y][x] = -1
 
+
+                
+    
     def load_level(self, renderer):
         renderer.scroll_x = 0
         with open('level_data.csv', newline='') as csvfile:
