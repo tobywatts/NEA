@@ -20,10 +20,6 @@ class Player:
     def draw(self, renderer):
         pygame.draw.rect(renderer.win, (255, 255, 255), (self.x, self.y, self.width, self.height))
 
-        # def jump(self, renderer):
-
-        # for i in range(100):
-        # Player.draw(self, renderer)
 
     def move(self, delta_time):
         keys = pygame.key.get_pressed()
