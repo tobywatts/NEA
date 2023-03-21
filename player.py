@@ -17,13 +17,17 @@ class Player:
         self.gravity = 1500
         self.jump = False
         self.onGround = True
+        self.player_img = pygame.image.load('player.png')
 
         self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
         
 
     def draw(self, renderer):
-        pygame.draw.rect(renderer.win, (255, 255, 255), (self.x - renderer.scroll_x, self.y - renderer.scroll_y, self.width, self.height))
+        new_player_img = pygame.transform.scale(self.player_img, (self.width, self.height))
+        renderer.win.blit(new_player_img, (self.x - renderer.scroll_x, self.y - renderer.scroll_y))
+
         self.hitbox = pygame.Rect(self.x - renderer.scroll_x, self.y - renderer.scroll_y, self.width, self.height)
+        # pygame.draw.rect(renderer.win, (255, 0, 0), self.hitbox, 2)
 
     def move(self, eventManager, renderer, delta_time):
         keys = pygame.key.get_pressed()
