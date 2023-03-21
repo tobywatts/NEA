@@ -71,11 +71,7 @@ class Renderer:
         for i in range(len(eventManager.hitboxes)):  
             hitbox = eventManager.hitboxes[i]  
             offsetHitbox = pygame.Rect(hitbox.x - self.scroll_x, hitbox.y - self.scroll_y, hitbox.width, hitbox.height)
-
-            if offsetHitbox.collidepoint(pygame.mouse.get_pos()):
-                pass
             
-            else:
-                pygame.draw.rect(self.win, (255, 0, 0), offsetHitbox, 2)
+            pygame.draw.rect(self.win, (255, 0, 0), offsetHitbox, 2)
 
                 

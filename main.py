@@ -27,10 +27,12 @@ while eventManager.running:
         delta_time = (new_time - start_time)
         start_time = new_time
 
+        player.move(eventManager, renderer, delta_time)
         renderer.draw_bg()
         renderer.draw_world(eventManager)
-        player.move(delta_time)
+        # renderer.draw_hitbox(eventManager)
         player.draw(renderer)
+
 
 
     eventManager.check_events()

@@ -73,11 +73,16 @@ class EventManager:
 
             if pygame.mouse.get_pressed()[1] == 1: # checks for middle click
                 newHitbox = pygame.Rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
-                self.hitboxes.append(newHitbox)
+                flag = True
+                for hitbox in self.hitboxes:
+                    if hitbox.colliderect(newHitbox):
+                        flag = False
+                if flag:
+                    self.hitboxes.append(newHitbox)
 
             if keys[pygame.K_e]:
                 for hitbox in self.hitboxes:
-                    if hitbox.collidepoint(pos):
+                    if hitbox.collidepoint(pos[0] + renderer.scroll_x, pos[1] + renderer.scroll_y):
                         self.hitboxes.remove(hitbox)
 
 

@@ -8,7 +8,7 @@ class Renderer:
     def __init__(self):
 
         self.win = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-        pygame.display.set_caption('Level Editor')
+        pygame.display.set_caption('Taro')
 
         # load images
         self.background_image = pygame.image.load('bg_images/temp_bg.png').convert_alpha()
@@ -31,7 +31,7 @@ class Renderer:
         self.win.fill((51, 51, 51))
         width = self.background_image.get_width()
         height = self.background_image.get_height()
-        for i in range(2):
+        for i in range(3):
             self.win.blit(self.background_image, (i * width - self.scroll_x, 0 - self.scroll_y))
             # will draw images below creating an extra layer below to the background
             self.win.blit(self.background_image, (i * width - self.scroll_x, height - self.scroll_y))
@@ -45,3 +45,9 @@ class Renderer:
 
                     eventManager.tiles[tile] = pygame.transform.scale(eventManager.tiles[tile], (TILE_SIZE, TILE_SIZE))
                     self.win.blit(eventManager.tiles[tile], (x * TILE_SIZE - self.scroll_x, y * TILE_SIZE - self.scroll_y))
+
+    def draw_hitbox(self, eventManager):
+        for i in range(len(eventManager.hitboxes)):  
+            hitbox = eventManager.hitboxes[i]  
+            offsetHitbox = pygame.Rect(hitbox.x - self.scroll_x, hitbox.y - self.scroll_y, hitbox.width, hitbox.height)
+            pygame.draw.rect(self.win, (255, 0, 0), offsetHitbox, 2)

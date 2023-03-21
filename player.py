@@ -11,42 +11,69 @@ class Player:
         self.width = 40
         self.height = 70
         self.vel = 350
-        self.jump_vel = 750
+        self.jump_vel = 0
+        self.jump_height = 725
         self.health = 100
-        self.gravity = 775
+        self.gravity = 1500
         self.jump = False
-        self.jump_height = 50
+        self.onGround = True
+
+        self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
+        
 
     def draw(self, renderer):
-        pygame.draw.rect(renderer.win, (255, 255, 255), (self.x, self.y, self.width, self.height))
+        pygame.draw.rect(renderer.win, (255, 255, 255), (self.x - renderer.scroll_x, self.y - renderer.scroll_y, self.width, self.height))
+        self.hitbox = pygame.Rect(self.x - renderer.scroll_x, self.y - renderer.scroll_y, self.width, self.height)
 
-
-    def move(self, delta_time):
+    def move(self, eventManager, renderer, delta_time):
         keys = pygame.key.get_pressed()
+        newPosition = pygame.Vector2(self.x, self.y)
+
         if keys[pygame.K_a]:
-            self.x -= self.vel * delta_time
+            newPosition.x -= self.vel * delta_time
 
         if keys[pygame.K_d]:
-            self.x += self.vel * delta_time
+            newPosition.x += self.vel * delta_time
 
-        if keys[pygame.K_w] or keys[pygame.K_SPACE]:
-            self.y -= self.jump_vel * delta_time
-
-        if self.jump is False and keys[pygame.K_SPACE] or keys[pygame.K_w]:
-            self.jump = True
+        if self.onGround and (keys[pygame.K_SPACE] or keys[pygame.K_w]):
+            # jump
+            self.jump_vel = -self.jump_height
+            self.onGround = False
         
-        if self.jump is True:
-            self.y -= self.jump_vel * delta_time
-            self.jump_vel -= 1000 * delta_time
+        if not self.onGround:
+            self.jump_vel += self.gravity * delta_time 
+            self.jump_vel = min(1000, self.jump_vel)
+        newPosition.y += self.jump_vel * delta_time
+        
+        
+        newHitboxX = pygame.Rect(newPosition.x, self.y, self.width, self.height)
+        newHitboxY = pygame.Rect(self.x, newPosition.y, self.width, self.height)
 
-            if self.jump_vel < -self.jump_height * delta_time:
-                self.jump = False
-                self.jump_vel = 750
+        canMoveX = True
+        for hitbox in eventManager.hitboxes:
+            if hitbox.colliderect(newHitboxX):
+                canMoveX = False
+                break
+        if canMoveX:
+            self.x = newPosition.x
+        
+        canMoveY = True
+        for hitbox in eventManager.hitboxes:
+            if hitbox.colliderect(newHitboxY):
+                if newPosition.y < hitbox.y:
+                    self.y = hitbox.y - self.height
+                    self.onGround = True  
+                    self.jump_vel = 0
+                canMoveY = False
+                break
+        if canMoveY:
+            self.onGround = False
+            self.y = newPosition.y
 
-        if self.y < 640:
-            self.y += self.gravity * delta_time
-        if self.y > 500:
-            self.y = 500
+        renderer.scroll_x = self.x - 400
+        renderer.scroll_y = self.y - 320
 
-        if self.x < 0:
-            self.x = 0
+        renderer.scroll_x = max(0, renderer.scroll_x)
+        renderer.scroll_x = min(renderer.scroll_x, 1400)
+        renderer.scroll_y = max(0, renderer.scroll_y)
+        renderer.scroll_y = min(renderer.scroll_y, 640)

@@ -13,6 +13,7 @@ class EventManager:
         self.tiles = []
         self.rect = []
         self.tile_set = pygame.image.load('tiles/Forest.png')
+        self.hitboxes = []
         
 
     def check_events(self):
@@ -36,10 +37,22 @@ class EventManager:
             world_data.append(r)
 
     def load_level(self, renderer):
-
         renderer.scroll_x = 0
         with open('level_data.csv', newline='') as csvfile:
             reader = csv.reader(csvfile, delimiter=',')
             for x, row in enumerate(reader):
                 for y, tile in enumerate(row):
                     world_data[x][y] = int(tile)
+
+        with open('hitbox_data.txt', 'r') as f:
+            line = f.readline()
+            while line:
+                values = line.strip().split(',')
+                left = int(values[0])
+                top = int(values[1])
+                width = int(values[2])
+                height = int(values[3])
+                new_hitbox = pygame.Rect(left, top, width, height)
+                self.hitboxes.append(new_hitbox)
+                line = f.readline()
+                                      
