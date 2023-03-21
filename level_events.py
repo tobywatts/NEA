@@ -14,7 +14,6 @@ class EventManager:
         self.tile_set = pygame.image.load('tiles/Forest.png')
         self.current_tile = 0
         self.hitboxes = []
-        self.hitbox_width = TILE_SIZE
 
     def check_events(self):
         for event in pygame.event.get():
@@ -55,6 +54,9 @@ class EventManager:
         renderer.scroll_x = min(renderer.background_image.get_width() * 2 - SCREEN_WIDTH, renderer.scroll_x)
 
     def tile_placing(self, renderer):
+
+        keys = pygame.key.get_pressed()
+
         pos = pygame.mouse.get_pos()
         x = int((pos[0] + renderer.scroll_x) // TILE_SIZE)
         y = int((pos[1] + renderer.scroll_y) // TILE_SIZE)
@@ -69,9 +71,16 @@ class EventManager:
             if pygame.mouse.get_pressed()[2] == 1:  # checks for right click
                 world_data[y][x] = -1
 
+            if pygame.mouse.get_pressed()[1] == 1: # checks for middle click
+                newHitbox = pygame.Rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+                self.hitboxes.append(newHitbox)
 
-                
-    
+            if keys[pygame.K_e]:
+                for hitbox in self.hitboxes:
+                    if hitbox.collidepoint(pos):
+                        self.hitboxes.remove(hitbox)
+
+
     def load_level(self, renderer):
         renderer.scroll_x = 0
         with open('level_data.csv', newline='') as csvfile:
@@ -80,9 +89,33 @@ class EventManager:
                 for y, tile in enumerate(row):
                     world_data[x][y] = int(tile)
 
+        with open('hitbox_data.txt', 'r') as f:
+            line = f.readline()
+            while line:
+                values = line.strip().split(',')
+                left = int(values[0])
+                top = int(values[1])
+                width = int(values[2])
+                height = int(values[3])
+                new_hitbox = pygame.Rect(left, top, width, height)
+                self.hitboxes.append(new_hitbox)
+                line = f.readline()
+                                      
+
     def save_level(self, renderer):
         if renderer.save_button.draw(renderer.win):
             with open('level_data.csv', 'w', newline='') as csvfile:
                 writer = csv.writer(csvfile, delimiter=',')
                 for row in world_data:
                     writer.writerow(row)
+                csvfile.close()
+
+            with open('hitbox_data.txt', 'w') as f:
+                for item in self.hitboxes:
+                    top = item.top
+                    left = item.left
+                    width = item.width
+                    height = item.height
+                    f.write(str(left) + ',' + str(top) + ',' + str(width) + ',' + str(height) + '\n')
+                f.close()
+

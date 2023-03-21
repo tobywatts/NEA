@@ -44,9 +44,4 @@ class Renderer:
                 if tile >= 0:
 
                     eventManager.tiles[tile] = pygame.transform.scale(eventManager.tiles[tile], (TILE_SIZE, TILE_SIZE))
-<<<<<<< HEAD
                     self.win.blit(eventManager.tiles[tile], (x * TILE_SIZE - self.scroll_x, y * TILE_SIZE - self.scroll_y))
-=======
-                    self.win.blit(eventManager.tiles[tile], (x * TILE_SIZE - self.scroll_x, y * TILE_SIZE - self.scroll_y))
-
->>>>>>> 577e502d0b7fe4f4b7106824a9e36c79526d2f80

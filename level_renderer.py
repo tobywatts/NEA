@@ -68,17 +68,14 @@ class Renderer:
 
     def draw_hitbox(self, eventManager):
 
-        pos = pygame.mouse.get_pos()
-        x = int(pos[0] + self.scroll_x)//TILE_SIZE
-        y = int(pos[1] + self.scroll_y)//TILE_SIZE
-
-        if pygame.mouse.get_pressed()[1] == 1:
-
-            newHitbox = pygame.Rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
-            eventManager.hitboxes.append(newHitbox)
-
         for i in range(len(eventManager.hitboxes)):  
             hitbox = eventManager.hitboxes[i]  
             offsetHitbox = pygame.Rect(hitbox.x - self.scroll_x, hitbox.y - self.scroll_y, hitbox.width, hitbox.height)
 
-            pygame.draw.rect(self.win, (255, 0, 0), offsetHitbox, 2)
+            if offsetHitbox.collidepoint(pygame.mouse.get_pos()):
+                pass
+            
+            else:
+                pygame.draw.rect(self.win, (255, 0, 0), offsetHitbox, 2)
+
+                

@@ -38,6 +38,7 @@ while eventManager.running:
     pygame.draw.rect(renderer.win, (50, 180, 125), (SCREEN_WIDTH, 0, SIDE_MARGIN, SCREEN_HEIGHT))
 
     eventManager.save_level(renderer)
+    # eventManager.save_hitboxes(renderer)
 
     for button_count, i in enumerate(button_list):
         if i.draw(renderer.win):
