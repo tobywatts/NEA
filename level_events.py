@@ -14,8 +14,6 @@ class EventManager:
         self.tile_set = pygame.image.load('tiles/Forest.png')
         self.current_tile = 0
         self.hitboxes = []
-        self.hitbox_x = []
-        self.hitbox_y = []
         self.hitbox_width = TILE_SIZE
 
     def check_events(self):
@@ -50,6 +48,11 @@ class EventManager:
 
         if keys[pygame.K_s] and renderer.scroll_y < (2 * renderer.background_image.get_height() - SCREEN_HEIGHT):
             renderer.scroll_y += 500 * delta_time
+
+        renderer.scroll_y = max(0, renderer.scroll_y)
+        renderer.scroll_y = min(renderer.background_image.get_height() * 2 - SCREEN_HEIGHT, renderer.scroll_y)
+        renderer.scroll_x = max(0, renderer.scroll_x)
+        renderer.scroll_x = min(renderer.background_image.get_width() * 2 - SCREEN_WIDTH, renderer.scroll_x)
 
     def tile_placing(self, renderer):
         pos = pygame.mouse.get_pos()

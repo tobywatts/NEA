@@ -36,7 +36,7 @@ class Renderer:
             # will draw images below creating an extra layer below to the background
             self.win.blit(self.background_image, (i * width - self.scroll_x, height - self.scroll_y))
 
-    def draw_world(self,renderer, eventManager):
+    def draw_world(self, eventManager):
         for y, row in enumerate(world_data):
 
             for x, tile in enumerate(row):
@@ -45,5 +45,3 @@ class Renderer:
 
                     eventManager.tiles[tile] = pygame.transform.scale(eventManager.tiles[tile], (TILE_SIZE, TILE_SIZE))
                     self.win.blit(eventManager.tiles[tile], (x * TILE_SIZE - self.scroll_x, y * TILE_SIZE - self.scroll_y))
-
-                    pygame.draw.rect(renderer.win, (255, 255, 255), eventManager.rect[tile], 2)
