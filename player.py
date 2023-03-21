@@ -6,8 +6,8 @@ from settings import *
 class Player:
 
     def __init__(self):
-        self.x = 400
-        self.y = 320
+        self.x = 660
+        self.y = 775
         self.width = 40
         self.height = 70
         self.vel = 350
@@ -44,7 +44,6 @@ class Player:
             self.jump_vel += self.gravity * delta_time 
             self.jump_vel = min(1000, self.jump_vel)
         newPosition.y += self.jump_vel * delta_time
-        
         
         newHitboxX = pygame.Rect(newPosition.x, self.y, self.width, self.height)
         newHitboxY = pygame.Rect(self.x, newPosition.y, self.width, self.height)
