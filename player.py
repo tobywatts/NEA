@@ -18,13 +18,20 @@ class Player:
         self.jump = False
         self.onGround = True
         self.player_img = pygame.image.load('player.png')
+        self.gun_spritesheet = pygame.image.load('player_sprites/guns.png')
+        self.gun_sprites = []
 
         self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
         
 
     def draw(self, renderer):
         new_player_img = pygame.transform.scale(self.player_img, (self.width, self.height))
+        ak = pygame.transform.scale(self.gun_sprites[2], (32, 32))
+        ak = pygame.transform.rotate(ak, -45)
+
         renderer.win.blit(new_player_img, (self.x - renderer.scroll_x, self.y - renderer.scroll_y))
+
+        renderer.win.blit(ak, (self.x - renderer.scroll_x + 15, self.y - renderer.scroll_y + 25))
 
         self.hitbox = pygame.Rect(self.x - renderer.scroll_x, self.y - renderer.scroll_y, self.width, self.height)
         # pygame.draw.rect(renderer.win, (255, 0, 0), self.hitbox, 2)
@@ -80,3 +87,8 @@ class Player:
         renderer.scroll_x = min(renderer.scroll_x, 1400)
         renderer.scroll_y = max(0, renderer.scroll_y)
         renderer.scroll_y = min(renderer.scroll_y, 640)
+
+    def shoot(self, renderer):
+        for i in range(4):
+            gun = self.gun_spritesheet.subsurface((i * WEAPON_WIDTH, 0), (WEAPON_WIDTH, WEAPON_WIDTH))
+            self.gun_sprites.append(gun)

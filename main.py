@@ -31,6 +31,7 @@ while eventManager.running:
         renderer.draw_bg()
         renderer.draw_world(eventManager)
         # renderer.draw_hitbox(eventManager)
+        player.shoot(renderer)
         player.draw(renderer)
 
 
