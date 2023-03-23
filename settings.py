@@ -13,6 +13,8 @@ TILE_ROWS = 6
 TILE_COLUMNS = 6
 SPRITE_WIDTH = 8
 
+WEAPON_WIDTH = 32
+
 button_list = []
 
 world_data = []
