@@ -8,6 +8,8 @@ class Player:
     def __init__(self):
         self.x = 660
         self.y = 775
+        self.new_x = 0
+        self.new_y = 0
         self.width = 40
         self.height = 70
         self.vel = 350
@@ -18,20 +20,19 @@ class Player:
         self.jump = False
         self.onGround = True
         self.player_img = pygame.image.load('player.png')
-        self.gun_spritesheet = pygame.image.load('player_sprites/guns.png')
         self.gun_sprites = []
 
         self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
         
 
-    def draw(self, renderer):
+    def draw(self, renderer, shoot):
         new_player_img = pygame.transform.scale(self.player_img, (self.width, self.height))
-        ak = pygame.transform.scale(self.gun_sprites[2], (32, 32))
-        ak = pygame.transform.rotate(ak, -45)
+        # ak = pygame.transform.scale(shoot.gun_sprites[2], (32, 32))
+        # ak = pygame.transform.rotate(ak, -45)
 
         renderer.win.blit(new_player_img, (self.x - renderer.scroll_x, self.y - renderer.scroll_y))
 
-        renderer.win.blit(ak, (self.x - renderer.scroll_x + 15, self.y - renderer.scroll_y + 25))
+        # renderer.win.blit(ak, (self.x - renderer.scroll_x + 15, self.y - renderer.scroll_y + 25))
 
         self.hitbox = pygame.Rect(self.x - renderer.scroll_x, self.y - renderer.scroll_y, self.width, self.height)
         # pygame.draw.rect(renderer.win, (255, 0, 0), self.hitbox, 2)
@@ -40,11 +41,14 @@ class Player:
         keys = pygame.key.get_pressed()
         newPosition = pygame.Vector2(self.x, self.y)
 
+        # moving
         if keys[pygame.K_a]:
             newPosition.x -= self.vel * delta_time
 
         if keys[pygame.K_d]:
             newPosition.x += self.vel * delta_time
+
+        # print(newPosition.x, newPosition.y)
 
         if self.onGround and (keys[pygame.K_SPACE] or keys[pygame.K_w]):
             # jump
@@ -59,6 +63,7 @@ class Player:
         newHitboxX = pygame.Rect(newPosition.x, self.y, self.width, self.height)
         newHitboxY = pygame.Rect(self.x, newPosition.y, self.width, self.height)
 
+        # collision
         canMoveX = True
         for hitbox in eventManager.hitboxes:
             if hitbox.colliderect(newHitboxX):
@@ -80,6 +85,11 @@ class Player:
             self.onGround = False
             self.y = newPosition.y
 
+        self.new_x = newPosition.x
+        self.new_y = newPosition.y
+
+
+        # camera
         renderer.scroll_x = self.x - 400
         renderer.scroll_y = self.y - 320
 
@@ -88,7 +98,3 @@ class Player:
         renderer.scroll_y = max(0, renderer.scroll_y)
         renderer.scroll_y = min(renderer.scroll_y, 640)
 
-    def shoot(self, renderer):
-        for i in range(4):
-            gun = self.gun_spritesheet.subsurface((i * WEAPON_WIDTH, 0), (WEAPON_WIDTH, WEAPON_WIDTH))
-            self.gun_sprites.append(gun)

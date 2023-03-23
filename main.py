@@ -5,10 +5,14 @@ from events import EventManager
 from renderer import Renderer
 from settings import *
 from player import Player
+from enemy import Enemy
+from shoot import Shoot
 
 eventManager = EventManager()
 renderer = Renderer()
 player = Player()
+shoot = Shoot()
+enemy = Enemy()
 
 pygame.init()
 
@@ -18,6 +22,7 @@ delta_time = 0
 eventManager.store_tiles()
 eventManager.world()
 eventManager.load_level(renderer)
+enemy.load_enemies()
 
 while eventManager.running:
 
@@ -28,11 +33,12 @@ while eventManager.running:
         start_time = new_time
 
         player.move(eventManager, renderer, delta_time)
+        enemy.move(player, delta_time)
         renderer.draw_bg()
         renderer.draw_world(eventManager)
         # renderer.draw_hitbox(eventManager)
-        player.shoot(renderer)
-        player.draw(renderer)
+        enemy.draw(renderer)
+        player.draw(renderer, shoot)
 
 
 
