@@ -22,7 +22,7 @@ delta_time = 0
 eventManager.store_tiles()
 eventManager.world()
 eventManager.load_level(renderer)
-enemy.load_enemies()
+enemy.load_enemies(renderer)
 
 while eventManager.running:
 
