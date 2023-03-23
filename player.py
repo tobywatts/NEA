@@ -91,8 +91,4 @@ class Player:
     def shoot(self, renderer):
         for i in range(4):
             gun = self.gun_spritesheet.subsurface((i * WEAPON_WIDTH, 0), (WEAPON_WIDTH, WEAPON_WIDTH))
-<<<<<<< HEAD
             self.gun_sprites.append(gun)
-=======
-            self.gun_sprites.append(gun)
->>>>>>> 90e39d9bc8d1979f04b9f5e73afe023676693514
