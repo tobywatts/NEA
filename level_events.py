@@ -14,6 +14,7 @@ class EventManager:
         self.tile_set = pygame.image.load('tiles/Forest.png')
         self.current_tile = 0
         self.hitboxes = []
+        self.enemy_hitboxes = []
 
     def check_events(self):
         for event in pygame.event.get():
@@ -85,6 +86,21 @@ class EventManager:
                     if hitbox.collidepoint(pos[0] + renderer.scroll_x, pos[1] + renderer.scroll_y):
                         self.hitboxes.remove(hitbox)
 
+            # create hitboxes only recognised by enemies
+            if keys[pygame.K_q]:
+                enemy_hitbox = pygame.Rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
+                enemy_flag = True
+                for hitbox in self.enemy_hitboxes:
+                    if hitbox.colliderect(enemy_hitbox):
+                        enemy_flag = False
+                if enemy_flag:
+                    self.enemy_hitboxes.append(enemy_hitbox)
+
+            if keys[pygame.K_f]:
+                for hitbox in self.enemy_hitboxes:
+                    if hitbox.collidepoint(pos[0] + renderer.scroll_x, pos[1] + renderer.scroll_y):
+                        self.enemy_hitboxes.remove(hitbox)
+
 
     def load_level(self, renderer):
         renderer.scroll_x = 0
@@ -105,6 +121,18 @@ class EventManager:
                 new_hitbox = pygame.Rect(left, top, width, height)
                 self.hitboxes.append(new_hitbox)
                 line = f.readline()
+
+        with open('enemy_hitbox_data.txt', 'r') as f:
+            line = f.readline()
+            while line:
+                values = line.strip().split(',')
+                left = int(values[0])
+                top = int(values[1])
+                width = int(values[2])
+                height = int(values[3])
+                new_hitbox = pygame.Rect(left, top, width, height)
+                self.enemy_hitboxes.append(new_hitbox)
+                line = f.readline()
                                       
 
     def save_level(self, renderer):
@@ -117,6 +145,15 @@ class EventManager:
 
             with open('hitbox_data.txt', 'w') as f:
                 for item in self.hitboxes:
+                    top = item.top
+                    left = item.left
+                    width = item.width
+                    height = item.height
+                    f.write(str(left) + ',' + str(top) + ',' + str(width) + ',' + str(height) + '\n')
+                f.close()
+
+            with open('enemy_hitbox_data.txt', 'w') as f:
+                for item in self.enemy_hitboxes:
                     top = item.top
                     left = item.left
                     width = item.width

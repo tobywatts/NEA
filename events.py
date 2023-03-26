@@ -5,15 +5,16 @@ from settings import *
 
 
 class EventManager:
-    def __init__(self):
+    def __init__(self, x, y):
         self.running = True
 
-        self.x = 0
-        self.y = 0
+        self.x = x
+        self.y = y
         self.tiles = []
         self.rect = []
         self.tile_set = pygame.image.load('tiles/Forest.png')
         self.hitboxes = []
+        self.enemy_hitboxes = []
         
 
     def check_events(self):
@@ -54,5 +55,17 @@ class EventManager:
                 height = int(values[3])
                 new_hitbox = pygame.Rect(left, top, width, height)
                 self.hitboxes.append(new_hitbox)
+                line = f.readline()
+
+        with open('enemy_hitbox_data.txt', 'r') as f:
+            line = f.readline()
+            while line:
+                values = line.strip().split(',')
+                left = int(values[0])
+                top = int(values[1])
+                width = int(values[2])
+                height = int(values[3])
+                new_enemy_hitbox = pygame.Rect(left, top, width, height)
+                self.enemy_hitboxes.append(new_enemy_hitbox)
                 line = f.readline()
                                       

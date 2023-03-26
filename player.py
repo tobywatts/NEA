@@ -5,9 +5,9 @@ from settings import *
 
 class Player:
 
-    def __init__(self):
-        self.x = 660
-        self.y = 775
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
         self.new_x = 0
         self.new_y = 0
         self.width = 40
@@ -21,32 +21,58 @@ class Player:
         self.onGround = True
         self.player_img = pygame.image.load('player.png')
         self.gun_sprites = []
+        self.crosshair = pygame.image.load('crosshair.png')
+        self.crosshair_rect = self.crosshair.get_rect()
+        self.mouse_pos = pygame.mouse.get_pos()
+
+        self.direction = 'left'
 
         self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
         
 
-    def draw(self, renderer, shoot):
-        new_player_img = pygame.transform.scale(self.player_img, (self.width, self.height))
+    def draw(self, renderer):
+        
+        self.mouse_pos = pygame.mouse.get_pos()
+        self.crosshair = pygame.transform.scale(self.crosshair, (32, 32))
+
+        self.crosshair_rect.x = self.mouse_pos[0]
+        self.crosshair_rect.y = self.mouse_pos[1]
+        renderer.win.blit(self.crosshair, (self.mouse_pos[0] - 16, self.mouse_pos[1] - 16))
+
         # ak = pygame.transform.scale(shoot.gun_sprites[2], (32, 32))
         # ak = pygame.transform.rotate(ak, -45)
 
+        new_player_img = pygame.transform.scale(self.player_img, (self.width, self.height))
+        if self.direction == 'left':
+            new_player_img = pygame.transform.flip(new_player_img, True, False)
         renderer.win.blit(new_player_img, (self.x - renderer.scroll_x, self.y - renderer.scroll_y))
+
+        
+
+        # renderer.win.blit(new_player_img, (self.x - renderer.scroll_x, self.y - renderer.scroll_y))
 
         # renderer.win.blit(ak, (self.x - renderer.scroll_x + 15, self.y - renderer.scroll_y + 25))
 
         self.hitbox = pygame.Rect(self.x - renderer.scroll_x, self.y - renderer.scroll_y, self.width, self.height)
         # pygame.draw.rect(renderer.win, (255, 0, 0), self.hitbox, 2)
 
-    def move(self, eventManager, renderer, delta_time):
+
+    def key_events(self, newPosition, delta_time):
         keys = pygame.key.get_pressed()
-        newPosition = pygame.Vector2(self.x, self.y)
 
         # moving
         if keys[pygame.K_a]:
             newPosition.x -= self.vel * delta_time
+            if newPosition.x < 0:
+                newPosition.x = 0
+            self.direction = 'left'
+
 
         if keys[pygame.K_d]:
             newPosition.x += self.vel * delta_time
+            if newPosition.x + self.width > 2200:
+                newPosition.x = 2200 - self.width
+            self.direction = 'right'
 
         # print(newPosition.x, newPosition.y)
 
@@ -54,6 +80,14 @@ class Player:
             # jump
             self.jump_vel = -self.jump_height
             self.onGround = False
+
+            
+
+    def move(self, eventManager, renderer, delta_time, dx=0, dy=0):
+        newPosition = pygame.Vector2(self.x+dx, self.y+dy)
+
+        if type(self) == Player:
+            self.key_events(newPosition, delta_time)
         
         if not self.onGround:
             self.jump_vel += self.gravity * delta_time 
@@ -71,6 +105,12 @@ class Player:
                 break
         if canMoveX:
             self.x = newPosition.x
+
+        else:
+            # stops enemies from falling off the sides 
+            if type(self) != Player:
+                self.change_direction()
+                return
         
         canMoveY = True
         for hitbox in eventManager.hitboxes:
@@ -81,6 +121,7 @@ class Player:
                     self.jump_vel = 0
                 canMoveY = False
                 break
+
         if canMoveY:
             self.onGround = False
             self.y = newPosition.y
@@ -89,12 +130,16 @@ class Player:
         self.new_y = newPosition.y
 
 
-        # camera
-        renderer.scroll_x = self.x - 400
-        renderer.scroll_y = self.y - 320
 
-        renderer.scroll_x = max(0, renderer.scroll_x)
-        renderer.scroll_x = min(renderer.scroll_x, 1400)
-        renderer.scroll_y = max(0, renderer.scroll_y)
-        renderer.scroll_y = min(renderer.scroll_y, 640)
+        if type(self) == Player:
+            # camera
+            renderer.scroll_x = self.x - 400
+            renderer.scroll_y = self.y - 320
+
+            renderer.scroll_x = max(0, renderer.scroll_x)
+            renderer.scroll_x = min(renderer.scroll_x, 1400)
+            renderer.scroll_y = max(0, renderer.scroll_y)
+            renderer.scroll_y = min(renderer.scroll_y, 640)
+
+            # print(newPosition.x, newPosition.y)
 

@@ -1,56 +1,144 @@
 import pygame
 
 from settings import *
-from random import choice
 
 
-class Enemy:
-
-    def __init__(self):
-        self.x = 0
-        self.y = 0
-        self.width = 50
-        self.height = 75
-        self.enemy_count = 3
-        self.enemy_spawn_locations = [(100, 245), (300, 300,), (450, 170)]
-        self.random_spawn = []
-        self.temp_enemies = []
-        self.enemies = []
-    def load_enemies(self, renderer):
+from player import Player
 
 
-        for i in range(self.enemy_count):
-            temp = choice(self.enemy_spawn_locations)
+class Enemy(Player):
+    def __init__(self, x, y):
+        super().__init__(x, y)
+        self.x = x
+        self.y = y
+        self.width = 60
+        self.height = 60
+        self.attack = False
 
-            if temp not in self.random_spawn:
-                self.random_spawn.append(temp)
-            
-            else:
-                self.random_spawn.append(choice(self.enemy_spawn_locations))
+        self.direction = 'left'
 
-        for i in range(len(self.random_spawn)):
-            self.temp_enemies.append(pygame.Rect(self.random_spawn[i][0], self.random_spawn[i][1], self.width, self.height))
+        self.vel = 75
+        
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
 
-            print(self.random_spawn)
+        self.walk = True
+        self.idle = False
+        self.attack = False
 
 
-    def draw(self, renderer):
+        self.idle_sprites = []
 
-        for i in range(len(self.random_spawn)):
-            temp_enemy = self.temp_enemies[i]  
-            offset_enemy = pygame.Rect(temp_enemy.x - renderer.scroll_x, temp_enemy.y - renderer.scroll_y, temp_enemy.width, temp_enemy.height)
-            self.enemies.append(offset_enemy)
+        self.idle_sprites.append(pygame.image.load('enemy_sprites/idle/WIZARD_IDLE_0.png'))
+        self.idle_sprites.append(pygame.image.load('enemy_sprites/idle/WIZARD_IDLE_1.png'))
+        self.idle_sprites.append(pygame.image.load('enemy_sprites/idle/WIZARD_IDLE_2.png'))
+        self.idle_sprites.append(pygame.image.load('enemy_sprites/idle/WIZARD_IDLE_3.png'))
 
-        # for enemy in self.enemies:
-            pygame.draw.rect(renderer.win, (255, 0, 0), offset_enemy)
+        self.walk_sprites = []
 
-    def move(self, player, delta_time):
-        for enemy in self.enemies:
-            if enemy.x - player.new_x <= 100:
-                enemy.x += 100 * delta_time
-        # if (self.x + self.random_spawn[0][0]) - (player.new_x) <= 100:
-        #     self.x += 100 * delta_time
-            
+        self.walk_sprites.append(pygame.image.load('enemy_sprites/walk/WIZARD_WALK_0.png'))
+        self.walk_sprites.append(pygame.image.load('enemy_sprites/walk/WIZARD_WALK_1.png'))
+        self.walk_sprites.append(pygame.image.load('enemy_sprites/walk/WIZARD_WALK_2.png'))
+        self.walk_sprites.append(pygame.image.load('enemy_sprites/walk/WIZARD_WALK_3.png'))
 
-    def shoot(self):
-        pass
+        self.attack_sprites = []
+
+        self.attack_sprites.append(pygame.image.load('enemy_sprites/attack/WIZARD_ATTACK_0.png'))
+        self.attack_sprites.append(pygame.image.load('enemy_sprites/attack/WIZARD_ATTACK_1.png'))
+        self.attack_sprites.append(pygame.image.load('enemy_sprites/attack/WIZARD_ATTACK_2.png'))
+        self.attack_sprites.append(pygame.image.load('enemy_sprites/attack/WIZARD_ATTACK_3.png'))
+
+        self.current_walk_sprite = 0
+        self.walk_image = self.walk_sprites[self.current_walk_sprite]
+
+
+        self.current_idle_sprite = 0
+        self.idle_image = self.idle_sprites[self.current_idle_sprite]
+
+
+    def walk_animation(self):
+        self.current_walk_sprite += 0.05
+        if self.current_walk_sprite >= len(self.walk_sprites):
+            self.current_walk_sprite = 0
+        self.walk_image = self.walk_sprites[int(self.current_walk_sprite)]
+        self.walk_image = pygame.transform.scale(self.walk_image, (self.width, self.height))
+
+    def idle_animation(self):
+        self.current_idle_sprite += 0.05
+        if self.current_idle_sprite >= len(self.idle_sprites):
+            self.current_idle_sprite = 0
+        self.idle_image = self.idle_sprites[int(self.current_idle_sprite)]
+        self.idle_image = pygame.transform.scale(self.idle_image, (self.width, self.height))
+        
+
+    def move(self, eventManager, renderer, delta_time, player):
+        dx = 0
+        dy = 0
+        if self.direction == 'left':
+            dx -= self.vel * delta_time
+        elif self.direction == 'right':
+            dx += self.vel * delta_time
+
+        if ((player.new_x - (self.x + dx) < 200 and player.new_x > self.x) or (self.x + dx - player.new_x < 200 and player.new_x < self.x)) and player.new_y - self.y < 200 and player.new_y - self.y > -200:
+            if player.new_x > self.x:
+                self.direction = 'right'
+            elif player.new_x < self.x:
+                self.direction = 'left'
+            dx = 0
+
+
+
+            self.idle = True
+            self.walk = False
+            self.attack_player(player)
+
+        super().move(eventManager, renderer, delta_time, dx, dy)
+
+
+        newHitboxX = pygame.Rect(self.x, self.y, self.width, self.height)
+
+
+        for hitbox in eventManager.enemy_hitboxes:
+            if hitbox.colliderect(newHitboxX):
+                self.change_direction()
+                break
+
+        if self.x < 0:
+            self.change_direction()
+        if self.x + self.width > 2200:
+            self.change_direction()
+
+
+
+    def attack_player(self, player):
+        if self.attack:
+            player.health -= 10
+            self.attack = False 
+
+
+
+    def change_direction(self):
+        if self.direction == 'left':
+            self.direction = 'right'
+        elif self.direction == 'right':
+            self.direction = 'left'
+
+
+
+    def show(self, renderer):
+        offsetRect = pygame.Rect(self.x - renderer.scroll_x, self.y - renderer.scroll_y, self.width, self.height)
+        # pygame.draw.rect(renderer.win, (255, 0, 0), offsetRect)
+        if self.walk:
+            if self.direction == 'left':
+                self.walk_image = pygame.transform.flip(self.walk_image, True, False)
+            if self.direction == 'right':
+                self.walk_image = pygame.transform.flip(self.walk_image, False, False)
+        
+            renderer.win.blit(self.walk_image, offsetRect)
+
+        if self.idle:
+            if self.direction == 'left':
+                self.idle_image = pygame.transform.flip(self.idle_image, True, False)
+            if self.direction == 'right':
+                self.idle_image = pygame.transform.flip(self.idle_image, False, False)
+        
+            renderer.win.blit(self.idle_image, offsetRect)

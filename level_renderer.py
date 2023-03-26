@@ -74,4 +74,10 @@ class Renderer:
             
             pygame.draw.rect(self.win, (255, 0, 0), offsetHitbox, 2)
 
+        for j in range(len(eventManager.enemy_hitboxes)):
+            enemy_hitbox = eventManager.enemy_hitboxes[j]
+            offsetEnemyHitbox = pygame.Rect(enemy_hitbox.x - self.scroll_x, enemy_hitbox.y - self.scroll_y,
+                                            enemy_hitbox.width, enemy_hitbox.height)
+
+            pygame.draw.rect(self.win, (0, 0, 255), offsetEnemyHitbox, 2)
                 
