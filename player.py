@@ -20,7 +20,16 @@ class Player:
         self.jump = False
         self.onGround = True
         self.player_img = pygame.image.load('player.png')
-        self.gun_sprites = []
+
+        self.guns = []
+        self.gun_sprites = pygame.image.load('player_sprites/ak.png')
+        self.guns.append(self.gun_sprites.subsurface(0, 0, 32, 32))
+        self.guns.append(self.gun_sprites.subsurface(32, 0, 32, 32))
+        self.guns.append(self.gun_sprites.subsurface(64, 0, 32, 32))
+        self.guns.append(self.gun_sprites.subsurface(96, 0, 32, 32))
+        self.ak = self.gun_sprites.subsurface(64, 0, 32, 32)
+
+
         self.crosshair = pygame.image.load('crosshair.png')
         self.crosshair_rect = self.crosshair.get_rect()
         self.mouse_pos = pygame.mouse.get_pos()
@@ -39,21 +48,21 @@ class Player:
         self.crosshair_rect.y = self.mouse_pos[1]
         renderer.win.blit(self.crosshair, (self.mouse_pos[0] - 16, self.mouse_pos[1] - 16))
 
-        # ak = pygame.transform.scale(shoot.gun_sprites[2], (32, 32))
-        # ak = pygame.transform.rotate(ak, -45)
 
         new_player_img = pygame.transform.scale(self.player_img, (self.width, self.height))
         if self.direction == 'left':
             new_player_img = pygame.transform.flip(new_player_img, True, False)
         renderer.win.blit(new_player_img, (self.x - renderer.scroll_x, self.y - renderer.scroll_y))
 
-        
-
-        # renderer.win.blit(new_player_img, (self.x - renderer.scroll_x, self.y - renderer.scroll_y))
-
-        # renderer.win.blit(ak, (self.x - renderer.scroll_x + 15, self.y - renderer.scroll_y + 25))
-
         self.hitbox = pygame.Rect(self.x - renderer.scroll_x, self.y - renderer.scroll_y, self.width, self.height)
+
+        # self.ak = pygame.transform.rotate (self.ak, -45)
+        self.ak = pygame.transform.scale(self.ak, (32, 32))
+
+
+        renderer.win.blit(self.ak, (self.x - renderer.scroll_x, self.y - renderer.scroll_y + 25))
+
+
         # pygame.draw.rect(renderer.win, (255, 0, 0), self.hitbox, 2)
 
 

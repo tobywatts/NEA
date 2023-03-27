@@ -142,3 +142,5 @@ class Enemy(Player):
                 self.idle_image = pygame.transform.flip(self.idle_image, False, False)
         
             renderer.win.blit(self.idle_image, offsetRect)
+            self.idle = False
+            self.walk = True
