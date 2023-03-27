@@ -20,6 +20,7 @@ class Player:
         self.jump = False
         self.onGround = True
         self.player_img = pygame.image.load('player.png')
+<<<<<<< HEAD
         self.shooting = False
 
         self.bullet_img = pygame.image.load('player_sprites/bullet_img.png')
@@ -37,6 +38,16 @@ class Player:
         self.gun_pos = (self.x + 20, self.y + 20)
         
         self.shoot = False
+=======
+
+        self.guns = []
+        self.gun_sprites = pygame.image.load('player_sprites/ak.png')
+        self.guns.append(self.gun_sprites.subsurface(0, 0, 32, 32))
+        self.guns.append(self.gun_sprites.subsurface(32, 0, 32, 32))
+        self.guns.append(self.gun_sprites.subsurface(64, 0, 32, 32))
+        self.guns.append(self.gun_sprites.subsurface(96, 0, 32, 32))
+        self.ak = self.gun_sprites.subsurface(64, 0, 32, 32)
+>>>>>>> aae776e60b0a9864550db068fe03597c5edad5d7
 
 
         self.crosshair = pygame.image.load('crosshair.png')
@@ -72,6 +83,7 @@ class Player:
             new_ak = pygame.transform.flip(new_ak, False, False)
 
         renderer.win.blit(new_player_img, (self.x - renderer.scroll_x, self.y - renderer.scroll_y))
+<<<<<<< HEAD
         renderer.win.blit(new_ak, (self.x - renderer.scroll_x, self.y - renderer.scroll_y + 25))
 
         self.hitbox = pygame.Rect(self.x - renderer.scroll_x, self.y - renderer.scroll_y, self.width, self.height)
@@ -139,6 +151,19 @@ class Player:
         if self.direction == 'left':
             self.gun_pos = (self.new_x - 10, self.new_y + 45)
             self.shoot = True
+=======
+
+        self.hitbox = pygame.Rect(self.x - renderer.scroll_x, self.y - renderer.scroll_y, self.width, self.height)
+
+        # self.ak = pygame.transform.rotate (self.ak, -45)
+        self.ak = pygame.transform.scale(self.ak, (32, 32))
+
+
+        renderer.win.blit(self.ak, (self.x - renderer.scroll_x, self.y - renderer.scroll_y + 25))
+
+
+        # pygame.draw.rect(renderer.win, (255, 0, 0), self.hitbox, 2)
+>>>>>>> aae776e60b0a9864550db068fe03597c5edad5d7
 
 
     def key_events(self, newPosition, delta_time):
