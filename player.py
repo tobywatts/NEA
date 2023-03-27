@@ -20,7 +20,25 @@ class Player:
         self.jump = False
         self.onGround = True
         self.player_img = pygame.image.load('player.png')
-        self.gun_sprites = []
+        self.shooting = False
+
+        self.bullet_img = pygame.image.load('player_sprites/bullet_img.png')
+        self.bullets_left = []
+        self.bullets_right = []
+        self.bullet_rects = []
+        self.bullet_vel = 500
+
+
+        self.ak = pygame.image.load('player_sprites/ak.png')
+
+
+
+        self.ak = pygame.transform.rotate (self.ak, -45)
+        self.gun_pos = (self.x + 20, self.y + 20)
+        
+        self.shoot = False
+
+
         self.crosshair = pygame.image.load('crosshair.png')
         self.crosshair_rect = self.crosshair.get_rect()
         self.mouse_pos = pygame.mouse.get_pos()
@@ -30,7 +48,7 @@ class Player:
         self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
         
 
-    def draw(self, renderer):
+    def draw(self, renderer, delta_time):
         
         self.mouse_pos = pygame.mouse.get_pos()
         self.crosshair = pygame.transform.scale(self.crosshair, (32, 32))
@@ -39,22 +57,88 @@ class Player:
         self.crosshair_rect.y = self.mouse_pos[1]
         renderer.win.blit(self.crosshair, (self.mouse_pos[0] - 16, self.mouse_pos[1] - 16))
 
-        # ak = pygame.transform.scale(shoot.gun_sprites[2], (32, 32))
-        # ak = pygame.transform.rotate(ak, -45)
 
         new_player_img = pygame.transform.scale(self.player_img, (self.width, self.height))
+        new_ak = pygame.transform.scale(self.ak, (50, 45))
+        
         if self.direction == 'left':
             new_player_img = pygame.transform.flip(new_player_img, True, False)
+            new_ak = pygame.transform.flip(new_ak, True, False)
+            
+
+        if self.direction == 'right':
+            
+            new_player_img = pygame.transform.flip(new_player_img, False, False)
+            new_ak = pygame.transform.flip(new_ak, False, False)
+
         renderer.win.blit(new_player_img, (self.x - renderer.scroll_x, self.y - renderer.scroll_y))
-
-        
-
-        # renderer.win.blit(new_player_img, (self.x - renderer.scroll_x, self.y - renderer.scroll_y))
-
-        # renderer.win.blit(ak, (self.x - renderer.scroll_x + 15, self.y - renderer.scroll_y + 25))
+        renderer.win.blit(new_ak, (self.x - renderer.scroll_x, self.y - renderer.scroll_y + 25))
 
         self.hitbox = pygame.Rect(self.x - renderer.scroll_x, self.y - renderer.scroll_y, self.width, self.height)
-        # pygame.draw.rect(renderer.win, (255, 0, 0), self.hitbox, 2)
+
+        if self.shoot == True:
+            
+
+            for bullet in self.bullets_right:
+
+                if bullet.x > 2200:
+                    self.bullets_right.remove(bullet)
+                if bullet.x < 0:
+                    self.bullets_right.remove(bullet)
+                if bullet.y > 1200:
+                    self.bullets_right.remove(bullet)
+                if bullet.y < 0:
+                    self.bullets_right.remove(bullet)
+                    
+                renderer.win.blit(self.bullet_img, bullet)
+                bullet.x += self.bullet_vel * delta_time
+
+                
+
+
+
+
+            for bullet in self.bullets_left:
+
+                if bullet.x > 2200:
+                    self.bullets_left.remove(bullet)
+                if bullet.x < 0:
+                    self.bullets_left.remove(bullet)
+                if bullet.y > 1200:
+                    self.bullets_left.remove(bullet)
+                if bullet.y < 0:
+                    self.bullets_left.remove(bullet)
+                    
+                renderer.win.blit(self.bullet_img, bullet)
+                
+                bullet.x -= self.bullet_vel * delta_time
+                
+                self.shoot = False
+
+
+
+    def show_bullet(self, renderer):
+        if self.direction == 'right':
+            self.gun_pos = (self.new_x + 50, self.new_y + 45)
+            self.shoot = True
+
+
+            if self.shoot == True:
+                new_bullet = pygame.Rect(self.gun_pos[0] - renderer.scroll_x, self.gun_pos[1] - renderer.scroll_y, 10, 10)
+                new_bullet_rect = pygame.Rect(self.gun_pos[0] - renderer.scroll_x, self.gun_pos[1] - renderer.scroll_y, 10, 10)
+                if new_bullet not in self.bullets_left:
+                    if self.direction == 'left':
+                        self.bullets_left.append(new_bullet)
+                        self.bullet_rects.append(new_bullet_rect)
+
+                if new_bullet not in self.bullets_right:
+                    if self.direction == 'right':
+                        self.bullets_right.append(new_bullet)
+                        self.bullet_rects.append(new_bullet_rect)
+
+        if self.direction == 'left':
+            self.gun_pos = (self.new_x - 10, self.new_y + 45)
+            self.shoot = True
 
 
     def key_events(self, newPosition, delta_time):
@@ -74,6 +158,9 @@ class Player:
                 newPosition.x = 2200 - self.width
             self.direction = 'right'
 
+        
+
+
         # print(newPosition.x, newPosition.y)
 
         if self.onGround and (keys[pygame.K_SPACE] or keys[pygame.K_w]):
@@ -88,6 +175,7 @@ class Player:
 
         if type(self) == Player:
             self.key_events(newPosition, delta_time)
+
         
         if not self.onGround:
             self.jump_vel += self.gravity * delta_time 
@@ -142,4 +230,3 @@ class Player:
             renderer.scroll_y = min(renderer.scroll_y, 640)
 
             # print(newPosition.x, newPosition.y)
-

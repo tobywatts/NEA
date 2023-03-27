@@ -6,10 +6,12 @@ from renderer import Renderer
 from settings import *
 from player import Player
 from enemy import Enemy
+# from bullet import Bullet
 
 eventManager = EventManager(0, 0)
 renderer = Renderer()
 player = Player(650, 1010)
+# bullet = Bullet(player.gun_pos[0], player.gun_pos[1])
 
 pygame.init()
 
@@ -40,13 +42,15 @@ while eventManager.running:
         delta_time = (new_time - start_time)
         start_time = new_time
 
-        player.move(eventManager, renderer, delta_time)
+        
 
         for enemy in enemies:
             enemy.move(eventManager, renderer, delta_time, player)
 
+        player.move(eventManager, renderer, delta_time)
         renderer.draw_bg()
         renderer.draw_world(eventManager)
+
         # renderer.draw_hitbox(eventManager)
         
         for enemy in enemies:
@@ -60,10 +64,16 @@ while eventManager.running:
                 enemy.idle_animation()
             enemy.show(renderer)
 
-        player.draw(renderer)
+        # player.attack(renderer)
+        
+        player.draw(renderer, delta_time)
+        enemy.attack_player(renderer, player)
+
+        # player.attack(renderer, delta_time, bullet)
 
 
 
-    eventManager.check_events()
+
+    eventManager.check_events(player, renderer)
 
     pygame.display.update()

@@ -15,6 +15,8 @@ class Enemy(Player):
         self.height = 60
         self.attack = False
 
+        self.up = pygame.math.Vector2(0, 1)
+
         self.direction = 'left'
 
         self.vel = 75
@@ -78,18 +80,21 @@ class Enemy(Player):
         elif self.direction == 'right':
             dx += self.vel * delta_time
 
+
+
         if ((player.new_x - (self.x + dx) < 200 and player.new_x > self.x) or (self.x + dx - player.new_x < 200 and player.new_x < self.x)) and player.new_y - self.y < 200 and player.new_y - self.y > -200:
             if player.new_x > self.x:
                 self.direction = 'right'
             elif player.new_x < self.x:
                 self.direction = 'left'
             dx = 0
+            self.attack = True
 
 
 
             self.idle = True
             self.walk = False
-            self.attack_player(player)
+            self.attack_player(player, renderer)
 
         super().move(eventManager, renderer, delta_time, dx, dy)
 
@@ -109,10 +114,11 @@ class Enemy(Player):
 
 
 
-    def attack_player(self, player):
+    def attack_player(self, player, renderer):
         if self.attack:
-            player.health -= 10
-            self.attack = False 
+            pygame.draw.line(renderer.win, (0, 0, 0), (player.x, player.y), (self.x, self.y), 5)
+        
+
 
 
 
@@ -142,3 +148,5 @@ class Enemy(Player):
                 self.idle_image = pygame.transform.flip(self.idle_image, False, False)
         
             renderer.win.blit(self.idle_image, offsetRect)
+            self.idle = False
+            self.walk = True

@@ -17,10 +17,21 @@ class EventManager:
         self.enemy_hitboxes = []
         
 
-    def check_events(self):
+    def check_events(self, player, renderer):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
+
+
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                player.shoot = True
+                player.show_bullet(renderer)
+                
+
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                player.shoot = False
+                player.show_bullet(renderer)
+
 
     def store_tiles(self):
         for i in range(TILE_ROWS * TILE_COLUMNS):
