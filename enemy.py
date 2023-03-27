@@ -115,8 +115,7 @@ class Enemy(Player):
 
 
     def attack_player(self, player, renderer):
-        if self.attack:
-            pygame.draw.line(renderer.win, (0, 0, 0), (player.x, player.y), (self.x, self.y), 5)
+        pass
         
 
 
