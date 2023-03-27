@@ -149,8 +149,4 @@ class Enemy(Player):
         
             renderer.win.blit(self.idle_image, offsetRect)
             self.idle = False
-<<<<<<< HEAD
             self.walk = True
-=======
-            self.walk = True
->>>>>>> aae776e60b0a9864550db068fe03597c5edad5d7
