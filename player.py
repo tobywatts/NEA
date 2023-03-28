@@ -20,12 +20,9 @@ class Player:
         self.jump = False
         self.onGround = True
         self.player_img = pygame.image.load('player.png')
-        self.shooting = False
 
         self.bullet_img = pygame.image.load('player_sprites/bullet_img.png')
-        self.bullets_left = []
-        self.bullets_right = []
-        self.bullet_rects = []
+        self.bullets = []
         self.bullet_vel = 500
 
 
@@ -36,7 +33,6 @@ class Player:
         self.ak = pygame.transform.rotate (self.ak, -45)
         self.gun_pos = (self.x + 20, self.y + 20)
         
-        self.shoot = False
 
 
         self.crosshair = pygame.image.load('crosshair.png')
@@ -46,6 +42,11 @@ class Player:
         self.direction = 'left'
 
         self.hitbox = pygame.Rect(self.x, self.y, self.width, self.height)
+        self.mouse_vect = pygame.Vector2(self.mouse_pos[0], self.mouse_pos[1])
+        self.player_vect = pygame.Vector2(self.x, self.y)
+        self.player_direction = self.mouse_vect - self.player_vect
+        self.angle = self.player_direction.angle_to(pygame.Vector2(0,-1))
+
         
 
     def draw(self, renderer, delta_time):
@@ -76,69 +77,24 @@ class Player:
 
         self.hitbox = pygame.Rect(self.x - renderer.scroll_x, self.y - renderer.scroll_y, self.width, self.height)
 
-        if self.shoot == True:
-            
 
-            for bullet in self.bullets_right:
+    def shoot(self, delta_time, renderer):
+        self.mouse_pos = pygame.mouse.get_pos()
+        self.player_vect = pygame.Vector2(self.new_x, self.new_y)
+        self.mouse_vect = pygame.Vector2(self.mouse_pos[0], self.mouse_pos[1])
 
-                if bullet.x > 2200:
-                    self.bullets_right.remove(bullet)
-                if bullet.x < 0:
-                    self.bullets_right.remove(bullet)
-                if bullet.y > 1200:
-                    self.bullets_right.remove(bullet)
-                if bullet.y < 0:
-                    self.bullets_right.remove(bullet)
-                    
-                renderer.win.blit(self.bullet_img, bullet)
-                bullet.x += self.bullet_vel * delta_time
+        # gets the direction the player should face
+        self.player_direction = self.mouse_vect - self.player_vect
 
-                
+        # calculates the angle from the up position
+        self.angle = self.player_direction.angle_to(pygame.Vector2(0,-1))
+        self.ak = pygame.transform.rotate(self.ak, self.angle)
+        
+        for bullet in self.bullets:
+            bullet.move(delta_time)
+            bullet.show(renderer.win)
 
 
-
-
-            for bullet in self.bullets_left:
-
-                if bullet.x > 2200:
-                    self.bullets_left.remove(bullet)
-                if bullet.x < 0:
-                    self.bullets_left.remove(bullet)
-                if bullet.y > 1200:
-                    self.bullets_left.remove(bullet)
-                if bullet.y < 0:
-                    self.bullets_left.remove(bullet)
-                    
-                renderer.win.blit(self.bullet_img, bullet)
-                
-                bullet.x -= self.bullet_vel * delta_time
-                
-                self.shoot = False
-
-
-
-    def show_bullet(self, renderer):
-        if self.direction == 'right':
-            self.gun_pos = (self.new_x + 50, self.new_y + 45)
-            self.shoot = True
-
-
-            if self.shoot == True:
-                new_bullet = pygame.Rect(self.gun_pos[0] - renderer.scroll_x, self.gun_pos[1] - renderer.scroll_y, 10, 10)
-                new_bullet_rect = pygame.Rect(self.gun_pos[0] - renderer.scroll_x, self.gun_pos[1] - renderer.scroll_y, 10, 10)
-                if new_bullet not in self.bullets_left:
-                    if self.direction == 'left':
-                        self.bullets_left.append(new_bullet)
-                        self.bullet_rects.append(new_bullet_rect)
-
-                if new_bullet not in self.bullets_right:
-                    if self.direction == 'right':
-                        self.bullets_right.append(new_bullet)
-                        self.bullet_rects.append(new_bullet_rect)
-
-        if self.direction == 'left':
-            self.gun_pos = (self.new_x - 10, self.new_y + 45)
-            self.shoot = True
 
 
     def key_events(self, newPosition, delta_time):

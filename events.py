@@ -4,6 +4,7 @@ import csv
 from settings import *
 
 
+
 class EventManager:
     def __init__(self, x, y):
         self.running = True
@@ -17,20 +18,16 @@ class EventManager:
         self.enemy_hitboxes = []
         
 
-    def check_events(self, player, renderer):
+    def check_events(self, player, bullet):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
 
 
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                player.shoot = True
-                player.show_bullet(renderer)
-                
-
-            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-                player.shoot = False
-                player.show_bullet(renderer)
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1: # if left click
+                    new_bullet = bullet(player.new_x, player.new_y, player.player_direction) # creates a new laser and gives it the direction of the player 
+                    player.bullets.append(new_bullet) # adds it to the list of all lasers to draw
 
 
     def store_tiles(self):
