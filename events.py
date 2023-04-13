@@ -18,7 +18,7 @@ class EventManager:
         self.enemy_hitboxes = []
         
 
-    def check_events(self, player, bullet):
+    def check_events(self, player, renderer):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
@@ -26,8 +26,8 @@ class EventManager:
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1: # if left click
-                    new_bullet = bullet(player.new_x, player.new_y, player.player_direction) # creates a new laser and gives it the direction of the player 
-                    player.bullets.append(new_bullet) # adds it to the list of all lasers to draw
+                    player.shoot(renderer)
+                    # adds it to the list of all lasers to draw
 
 
     def store_tiles(self):

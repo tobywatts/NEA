@@ -1,12 +1,12 @@
 import pygame
 import time
+import bullet
 
 from events import EventManager
 from renderer import Renderer
 from settings import *
 from player import Player
 from enemy import Enemy
-from bullet import Bullet
 
 eventManager = EventManager(0, 0)
 renderer = Renderer()
@@ -42,7 +42,6 @@ while eventManager.running:
         delta_time = (new_time - start_time)
         start_time = new_time
 
-        
 
         for enemy in enemies:
             enemy.move(eventManager, renderer, delta_time, player)
@@ -50,6 +49,12 @@ while eventManager.running:
         player.move(eventManager, renderer, delta_time)
         renderer.draw_bg()
         renderer.draw_world(eventManager)
+
+        for bullet in player.bullets:
+            deadBullet = bullet.move(delta_time, eventManager)
+            if deadBullet:
+                player.bullets.remove(bullet)
+            bullet.show(renderer)
 
         # renderer.draw_hitbox(eventManager)
         
@@ -67,14 +72,13 @@ while eventManager.running:
         # player.attack(renderer)
         
         player.draw(renderer, delta_time)
-        player.shoot(renderer, delta_time)
         enemy.attack_player(renderer, player)
 
         # player.attack(renderer, delta_time, bullet)
 
 
 
-    bullet = Bullet(player.new_x, player.new_y, player.player_direction)
-    eventManager.check_events(player, bullet)
+
+    eventManager.check_events(player, renderer)
 
     pygame.display.update()

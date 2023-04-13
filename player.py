@@ -1,7 +1,10 @@
 import pygame
+import math
 
 from settings import *
 
+
+from bullet import Bullet
 
 class Player:
 
@@ -28,8 +31,6 @@ class Player:
 
         self.ak = pygame.image.load('player_sprites/ak.png')
 
-
-
         self.ak = pygame.transform.rotate (self.ak, -45)
         self.gun_pos = (self.x + 20, self.y + 20)
         
@@ -46,6 +47,8 @@ class Player:
         self.player_vect = pygame.Vector2(self.x, self.y)
         self.player_direction = self.mouse_vect - self.player_vect
         self.angle = self.player_direction.angle_to(pygame.Vector2(0,-1))
+
+        self.bullets = []
 
         
 
@@ -64,13 +67,11 @@ class Player:
         
         if self.direction == 'left':
             new_player_img = pygame.transform.flip(new_player_img, True, False)
-            new_ak = pygame.transform.flip(new_ak, True, False)
             
 
         if self.direction == 'right':
             
             new_player_img = pygame.transform.flip(new_player_img, False, False)
-            new_ak = pygame.transform.flip(new_ak, False, False)
 
         renderer.win.blit(new_player_img, (self.x - renderer.scroll_x, self.y - renderer.scroll_y))
         renderer.win.blit(new_ak, (self.x - renderer.scroll_x, self.y - renderer.scroll_y + 25))
@@ -78,21 +79,38 @@ class Player:
         self.hitbox = pygame.Rect(self.x - renderer.scroll_x, self.y - renderer.scroll_y, self.width, self.height)
 
 
-    def shoot(self, delta_time, renderer):
+    def shoot(self, renderer):
         self.mouse_pos = pygame.mouse.get_pos()
-        self.player_vect = pygame.Vector2(self.new_x, self.new_y)
-        self.mouse_vect = pygame.Vector2(self.mouse_pos[0], self.mouse_pos[1])
+        mousePos = pygame.Vector2(self.mouse_pos[0], self.mouse_pos[1])
+        bottomLeft = pygame.Vector2(0, SCREEN_HEIGHT)
+        mouseDirection = mousePos - bottomLeft
 
-        # gets the direction the player should face
-        self.player_direction = self.mouse_vect - self.player_vect
+        up = pygame.Vector2(0, -1)
+        playerScreenPosition = pygame.Vector2(self.x-renderer.scroll_x, self.y-renderer.scroll_y)
 
-        # calculates the angle from the up position
-        self.angle = self.player_direction.angle_to(pygame.Vector2(0,-1))
-        self.ak = pygame.transform.rotate(self.ak, self.angle)
+        test = mousePos-playerScreenPosition
+        angle = up.angle_to(test)-90
+
+        self.ak = pygame.image.load('player_sprites/ak.png')
+        self.ak = pygame.transform.rotate(self.ak, -angle-45)
+
+        direction = pygame.Vector2(math.cos(math.radians(angle)), math.sin(math.radians(angle)))
+
+        newBullet = Bullet(self.x, self.y+35, direction, angle)
+        self.bullets.append(newBullet)
+
+
+
+        # self.player_vect = pygame.Vector2(self.new_x, self.new_y)
+        # self.mouse_vect = pygame.Vector2(self.mouse_pos[0], self.mouse_pos[1])
+
+        # # gets the direction the player should face
+        # self.player_direction = self.mouse_vect - self.player_vect
+
+        # # calculates the angle from the up position
+        # self.angle = self.player_direction.angle_to(pygame.Vector2(0,-1))
+        # # self.ak = pygame.transform.rotate(self.ak, self.angle)
         
-        for bullet in self.bullets:
-            bullet.move(delta_time)
-            bullet.show(renderer.win)
 
 
 
